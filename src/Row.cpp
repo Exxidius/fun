@@ -1,13 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <cstring>
-#include "Constants.h"
-
-typedef struct Row
-{
-    size_t num_chars;
-    char *chars;
-} Row;
+#include "../include/Row.hpp"
+#include "../include/Constants.hpp"
 
 int init_row(Row *row, char *line, size_t num_chars)
 {

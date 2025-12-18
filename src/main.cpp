@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <curses.h>
 #include <cstring>
-#include "../include/Constants.h"
-#include "../include/Editor.h"
+#include "../include/Constants.hpp"
+#include "../include/Editor.hpp"
 
 void quit()
 {
@@ -12,41 +12,43 @@ void quit()
 
 typedef struct Args
 {
-    char filename[128];
+    std::string filename;
 } Args;
 
-int handle_args(Args *args, int argc, char **argv)
+int HandleArgs(Args *args, int argc, char **argv)
 {
     if (argc <= 1)
     {
-        fprintf(stderr, "Error: No file was provided.\n");
+        std::fprintf(stderr, "Error: No file was provided.\n");
         return -1;
     }
     size_t filename_len = strlen(argv[1]);
     if (filename_len > MAX_FILENAME_LEN)
     {
-        fprintf(stderr, "Error: Filename to long.\n");
+        std::fprintf(stderr, "Error: Filename to long.\n");
         return -1;
     }
-    memcpy(args->filename, argv[1], filename_len);
+    args->filename = std::string(argv[1]);
     return 0;
 }
 
 int main(int argc, char **argv)
 {
     Args args;
-    if (handle_args(&args, argc, argv) != 0)
+    if (HandleArgs(&args, argc, argv) != 0)
     {
         return -1;
     }
     Editor e = Editor(std::string(args.filename));
-    if (init_editor(&e, args.filename) != 0)
+    if (e.Init() != 0)
     {
         return -1;
     }
     atexit(quit);
     initscr();
+
     nodelay(stdscr, TRUE);
-    run_editor(&e);
+    e.Run();
+
     return 0;
 }

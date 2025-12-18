@@ -1,19 +1,12 @@
-#include <stdio.h>
-#include "Row.h"
+#include "../include/TextBuffer.hpp"
+#include "../include/Constants.hpp"
 
-typedef struct TextBuffer
-{
-    size_t num_rows_used;
-    size_t num_rows;
-    Row *rows;
-} TextBuffer;
-
-int init_textbuffer(TextBuffer *buf, char *filename)
+int init_textbuffer(TextBuffer *buf, const char *filename)
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL)
     {
-        fprintf(stderr, "Error: Could not open the provided file.\n");
+        fprintf(stderr, "Error: Could not open file %s.\n", filename);
         return -1;
     }
 
