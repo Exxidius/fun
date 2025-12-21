@@ -1,12 +1,15 @@
 #pragma once
-#include <stdio.h>
 #include "Row.hpp"
+#include <vector>
 
-typedef struct TextBuffer
-{
-    size_t num_rows_used;
-    size_t num_rows;
-    Row *rows;
-} TextBuffer;
+class TextBuffer {
+public:
+  TextBuffer() = default;
+  TextBuffer(std::string filename);
 
-int init_textbuffer(TextBuffer*, const char* filename);
+  std::vector<Row> GetLines() { return rows; }
+
+private:
+  std::vector<Row> rows;
+  std::string filename;
+};

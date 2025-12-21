@@ -1,13 +1,13 @@
 #pragma once
-#include <stdlib.h>
-#include <stdio.h>
-#include <cstring>
+#include <string>
 
-typedef struct Row
-{
-    size_t num_chars;
-    char *chars;
-} Row;
+class Row {
+public:
+  Row() = default;
+  Row(std::string line);
 
-int init_row(Row* row, char* line, size_t num_chars);
+  std::string GetChars() { return chars; }
 
+private:
+  std::string chars;
+};
