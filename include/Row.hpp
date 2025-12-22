@@ -9,6 +9,7 @@ public:
   size_t NumChars() { return chars.size(); }
 
   void Draw(bool full = false);
+  void InputChar(const char c, const int x);
 
 private:
   std::string chars;

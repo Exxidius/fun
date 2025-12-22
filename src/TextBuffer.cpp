@@ -26,7 +26,11 @@ void TextBuffer::Draw(bool full) {
 
 size_t TextBuffer::NumCharsAt(size_t idx) {
   if (idx >= NumRows()) {
-    throw new std::runtime_error("Error: Access to buffer out of range.");
+    return 0;
   }
   return rows.at(idx).NumChars();
+}
+
+void TextBuffer::InputChar(const char c, const Coords pos) {
+  rows.at(pos.y).InputChar(c, pos.x);
 }

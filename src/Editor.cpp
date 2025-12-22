@@ -1,5 +1,6 @@
 #include "../include/Editor.hpp"
 #include <algorithm>
+#include <iostream>
 
 Editor::Editor(std::string filename) {
   buffers.emplace_back(filename);
@@ -31,7 +32,7 @@ TextBuffer &Editor::ActiveBuffer() {
 }
 
 void Editor::ClampCursor() {
-  cursor.y = std::clamp(cursor.y, 0, (int)ActiveBuffer().NumRows() - 1);
+  cursor.y = std::clamp(cursor.y, 0, (int)ActiveBuffer().NumRows());
   cursor.x =
       std::clamp(cursor.x, 0, (int)ActiveBuffer().NumCharsAt(cursor.y) - 1);
 }
@@ -39,27 +40,69 @@ void Editor::ClampCursor() {
 void Editor::Run() {
   clear();
   while (true) {
-    char action = getch();
-    if (action == 'q') {
+    char c = getch();
+    switch (mode) {
+    case Mode::Typing:
+      HandleTyping(c);
+      break;
+    case Mode::Standard:
+      HandleStandard(c);
+      break;
+    case Mode::Quit:
       return;
-    }
-    switch (action) {
-    case 'h':
-      cursor.x--;
-      break;
-    case 'j':
-      cursor.y++;
-      break;
-    case 'k':
-      cursor.y--;
-      break;
-    case 'l':
-      cursor.x++;
-      break;
     }
     ClampCursor();
     RefreshScreen();
   }
+}
+
+void Editor::HandleStandard(const char c) {
+  switch (c) {
+  case 'q':
+    mode = Mode::Quit;
+    break;
+  case 'h':
+    cursor.x--;
+    break;
+  case 'j':
+    cursor.y++;
+    break;
+  case 'k':
+    cursor.y--;
+    break;
+  case 'l':
+    cursor.x++;
+    break;
+  case 'i':
+    ChangeCursor(CursorMode::Bar);
+    mode = Mode::Typing;
+    break;
+  }
+}
+
+void Editor::HandleTyping(const char c) {
+  switch (c) {
+  case ERR: // Nothing to do here
+    break;
+  case KEY_ESC:
+    ChangeCursor(CursorMode::Block);
+    mode = Mode::Standard;
+    break;
+  case KEY_ENTER:
+    // TODO
+    break;
+  case KEY_BACKSPACE:
+    // TODO
+    break;
+  default:
+    ActiveBuffer().InputChar(c, cursor);
+    cursor.x++;
+    break;
+  }
+}
+
+void Editor::ChangeCursor(CursorMode shape) {
+  std::cout << "\033[" << shape << " q" << std::flush;
 }
 
 Editor::~Editor() { endwin(); }

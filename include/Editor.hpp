@@ -4,16 +4,7 @@
 #include <string>
 #include <vector>
 
-typedef struct Coords {
-  int x;
-  int y;
-
-  Coords(int x, int y) : x(x), y(y) {}
-
-  inline bool operator!=(const Coords &other) {
-    return x != other.x || y != other.y;
-  }
-} Coords;
+#define KEY_ESC 27
 
 class Editor {
 public:
@@ -26,6 +17,9 @@ public:
 
   void Run();
   void ClampCursor();
+  void HandleTyping(const char c);
+  void HandleStandard(const char c);
+  void ChangeCursor(CursorMode mode);
 
 private:
   void RefreshScreen();
@@ -33,4 +27,5 @@ private:
   std::vector<TextBuffer> buffers;
   int active_buffer_idx = -1;
   Coords cursor = Coords(0, 0);
+  Mode mode = Mode::Standard;
 };

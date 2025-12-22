@@ -1,9 +1,6 @@
-#include "../include/Constants.hpp"
 #include "../include/Editor.hpp"
-#include <cstring>
 #include <curses.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
 
 typedef struct Args {
   std::string filename;
@@ -23,8 +20,13 @@ int main(int argc, char **argv) {
   if (HandleArgs(&args, argc, argv) != 0) {
     return -1;
   }
-
-  Editor e(Editor(std::string(args.filename)));
-  e.Run();
+  try {
+    Editor e(Editor(std::string(args.filename)));
+    e.Run();
+  } catch (...) {
+    // TODO: fix error handling
+    std::cerr << "An error occured.\n";
+    return 1;
+  }
   return 0;
 }
