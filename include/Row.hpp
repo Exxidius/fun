@@ -6,8 +6,11 @@ public:
   Row() = default;
   Row(std::string line);
 
-  std::string GetChars() { return chars; }
+  size_t NumChars() { return chars.size(); }
+
+  void Draw(bool full = false);
 
 private:
   std::string chars;
+  bool is_dirty = true;
 };

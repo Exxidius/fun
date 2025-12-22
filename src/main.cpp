@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void quit() { endwin(); }
-
 typedef struct Args {
   std::string filename;
 } Args;
@@ -25,13 +23,8 @@ int main(int argc, char **argv) {
   if (HandleArgs(&args, argc, argv) != 0) {
     return -1;
   }
-  Editor e = Editor(std::string(args.filename));
 
-  atexit(quit);
-  initscr();
-  nodelay(stdscr, TRUE);
-
+  Editor e(Editor(std::string(args.filename)));
   e.Run();
-
   return 0;
 }

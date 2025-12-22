@@ -7,7 +7,10 @@ public:
   TextBuffer() = default;
   TextBuffer(std::string filename);
 
-  std::vector<Row> GetLines() { return rows; }
+  size_t NumRows() { return rows.size(); }
+  size_t NumCharsAt(size_t idx);
+
+  void Draw(bool full = false);
 
 private:
   std::vector<Row> rows;
