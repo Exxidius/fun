@@ -4,7 +4,12 @@
 #include <string>
 #include <vector>
 
+#define CTRL_KEY(k) ((k) & 0x1f)
 #define KEY_ESC 27
+#define KEY_BACKSPACE_ASCII 8
+#define KEY_BACKSPACE_DEL 127
+#define KEY_ENTER_LINE_FEED 10
+#define KEY_ENTER_CARR_RET 13
 
 class Editor {
 public:

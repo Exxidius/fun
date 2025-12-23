@@ -6,10 +6,15 @@ public:
   Row() = default;
   Row(std::string line);
 
+  Row Split(const int pos);
+
   size_t NumChars() { return chars.size(); }
 
   void Draw(bool full = false);
-  void InputChar(const char c, const int x);
+  void InputChar(const char c, const int pos);
+  void Write(std::ofstream &file);
+  void DeleteChar(const int pos);
+  void Append(const Row &other);
 
 private:
   std::string chars;

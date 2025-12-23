@@ -9,6 +9,7 @@ Editor::Editor(std::string filename) {
   initscr();
   cbreak();
   noecho();
+  raw();
   nodelay(stdscr, TRUE);
 }
 
@@ -32,7 +33,7 @@ TextBuffer &Editor::ActiveBuffer() {
 }
 
 void Editor::ClampCursor() {
-  cursor.y = std::clamp(cursor.y, 0, (int)ActiveBuffer().NumRows());
+  cursor.y = std::clamp(cursor.y, 0, (int)ActiveBuffer().NumRows() - 1);
   cursor.x =
       std::clamp(cursor.x, 0, (int)ActiveBuffer().NumCharsAt(cursor.y) - 1);
 }
@@ -61,6 +62,9 @@ void Editor::HandleStandard(const char c) {
   case 'q':
     mode = Mode::Quit;
     break;
+  case CTRL_KEY('s'):
+    ActiveBuffer().Save();
+    break;
   case 'h':
     cursor.x--;
     break;
@@ -88,15 +92,18 @@ void Editor::HandleTyping(const char c) {
     ChangeCursor(CursorMode::Block);
     mode = Mode::Standard;
     break;
-  case KEY_ENTER:
-    // TODO
-    break;
   case KEY_BACKSPACE:
-    // TODO
+  case KEY_BACKSPACE_ASCII:
+  case KEY_BACKSPACE_DEL:
+    ActiveBuffer().DeleteChar(cursor);
+    break;
+  case KEY_ENTER_CARR_RET:
+  case KEY_ENTER_LINE_FEED:
+  case KEY_ENTER:
+    ActiveBuffer().InputChar('\n', cursor);
     break;
   default:
     ActiveBuffer().InputChar(c, cursor);
-    cursor.x++;
     break;
   }
 }

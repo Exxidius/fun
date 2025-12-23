@@ -9,6 +9,10 @@ struct Coords {
   inline bool operator!=(const Coords &other) {
     return x != other.x || y != other.y;
   }
+  inline void operator+=(const Coords &other) {
+    x += other.x;
+    y += other.y;
+  }
 };
 
 enum Mode {

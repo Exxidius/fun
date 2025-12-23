@@ -11,9 +11,10 @@ public:
   size_t NumRows() { return rows.size(); }
   size_t NumCharsAt(size_t idx);
 
+  void InputChar(const char c, Coords &pos);
+  void DeleteChar(Coords &pos);
   void Draw(bool full = false);
-  void InputChar(const char c, const Coords pos);
-  // TODO: save
+  void Save();
 
 private:
   std::vector<Row> rows;
