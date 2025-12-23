@@ -4,13 +4,6 @@
 #include <string>
 #include <vector>
 
-#define CTRL_KEY(k) ((k) & 0x1f)
-#define KEY_ESC 27
-#define KEY_BACKSPACE_ASCII 8
-#define KEY_BACKSPACE_DEL 127
-#define KEY_ENTER_LINE_FEED 10
-#define KEY_ENTER_CARR_RET 13
-
 class Editor {
 public:
   Editor(std::string filename);
@@ -18,12 +11,15 @@ public:
 
   TextBuffer &ActiveBuffer();
 
+  StandardAction GetStandardAction(const int input);
+  TypingAction GetTypingAction(const int input);
+
   bool CursorChanged();
 
   void Run();
   void ClampCursor();
-  void HandleTyping(const char c);
-  void HandleStandard(const char c);
+  void HandleTyping(const int input);
+  void HandleStandard(const int input);
   void ChangeCursor(CursorMode mode);
 
 private:
@@ -32,5 +28,6 @@ private:
   std::vector<TextBuffer> buffers;
   int active_buffer_idx = -1;
   Coords cursor = Coords(0, 0);
-  Mode mode = Mode::Standard;
+  EditorMode mode = EditorMode::Standard;
+  bool running = true;
 };

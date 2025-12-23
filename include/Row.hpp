@@ -8,13 +8,14 @@ public:
 
   Row Split(const int pos);
 
-  size_t NumChars() { return chars.size(); }
+  size_t NumChars();
 
   void Draw(bool full = false);
   void InputChar(const char c, const int pos);
   void Write(std::ofstream &file);
   void DeleteChar(const int pos);
   void Append(const Row &other);
+  void Append(const char *s);
 
 private:
   std::string chars;

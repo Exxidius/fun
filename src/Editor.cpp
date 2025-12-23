@@ -10,7 +10,7 @@ Editor::Editor(std::string filename) {
   cbreak();
   noecho();
   raw();
-  nodelay(stdscr, TRUE);
+  RefreshScreen();
 }
 
 bool Editor::CursorChanged() {
@@ -27,89 +27,121 @@ void Editor::RefreshScreen() {
 
 TextBuffer &Editor::ActiveBuffer() {
   if (active_buffer_idx < 0) {
-    throw new std::runtime_error("Error: No Buffer active!");
+    throw std::runtime_error("No Buffer active!");
   }
   return buffers.at(active_buffer_idx);
 }
 
 void Editor::ClampCursor() {
   cursor.y = std::clamp(cursor.y, 0, (int)ActiveBuffer().NumRows() - 1);
-  cursor.x =
-      std::clamp(cursor.x, 0, (int)ActiveBuffer().NumCharsAt(cursor.y) - 1);
+  cursor.x = std::clamp(cursor.x, 0, (int)ActiveBuffer().NumCharsAt(cursor.y));
 }
 
 void Editor::Run() {
-  clear();
-  while (true) {
-    char c = getch();
+  while (running) {
+    int c = getch();
     switch (mode) {
-    case Mode::Typing:
+    case EditorMode::Typing:
       HandleTyping(c);
       break;
-    case Mode::Standard:
+    case EditorMode::Standard:
       HandleStandard(c);
       break;
-    case Mode::Quit:
-      return;
     }
     ClampCursor();
     RefreshScreen();
   }
 }
 
-void Editor::HandleStandard(const char c) {
-  switch (c) {
-  case 'q':
-    mode = Mode::Quit;
+void Editor::HandleStandard(const int input) {
+  StandardAction action = GetStandardAction(input);
+  switch (action) {
+  case StandardAction::Quit:
+    running = false;
     break;
-  case CTRL_KEY('s'):
+  case StandardAction::Save:
     ActiveBuffer().Save();
     break;
-  case 'h':
+  case StandardAction::MoveLeft:
     cursor.x--;
     break;
-  case 'j':
+  case StandardAction::MoveDown:
     cursor.y++;
     break;
-  case 'k':
+  case StandardAction::MoveUp:
     cursor.y--;
     break;
-  case 'l':
+  case StandardAction::MoveRight:
     cursor.x++;
     break;
-  case 'i':
+  case StandardAction::EnterInsertMode:
     ChangeCursor(CursorMode::Bar);
-    mode = Mode::Typing;
+    mode = EditorMode::Typing;
+    break;
+  case StandardAction::Unknown:
     break;
   }
 }
 
-void Editor::HandleTyping(const char c) {
-  switch (c) {
-  case ERR: // Nothing to do here
-    break;
-  case KEY_ESC:
+void Editor::HandleTyping(const int input) {
+  TypingAction action = GetTypingAction(input);
+  switch (action) {
+  case TypingAction::ExitTypingMode:
     ChangeCursor(CursorMode::Block);
-    mode = Mode::Standard;
+    mode = EditorMode::Standard;
     break;
-  case KEY_BACKSPACE:
-  case KEY_BACKSPACE_ASCII:
-  case KEY_BACKSPACE_DEL:
+  case TypingAction::DeletePreviousChar:
     ActiveBuffer().DeleteChar(cursor);
     break;
-  case KEY_ENTER_CARR_RET:
-  case KEY_ENTER_LINE_FEED:
-  case KEY_ENTER:
+  case TypingAction::TypeNewline:
     ActiveBuffer().InputChar('\n', cursor);
     break;
-  default:
-    ActiveBuffer().InputChar(c, cursor);
+  case TypingAction::TypeCharacter:
+    ActiveBuffer().InputChar(input, cursor);
     break;
   }
 }
 
 void Editor::ChangeCursor(CursorMode shape) {
   std::cout << "\033[" << shape << " q" << std::flush;
+}
+
+StandardAction Editor::GetStandardAction(const int input) {
+  switch (input) {
+  case 'q':
+    return StandardAction::Quit;
+  case CTRL_KEY('s'):
+    return StandardAction::Save;
+  case 'h':
+    return StandardAction::MoveLeft;
+  case 'j':
+    return StandardAction::MoveDown;
+  case 'k':
+    return StandardAction::MoveUp;
+  case 'l':
+    return StandardAction::MoveRight;
+  case 'i':
+    return StandardAction::EnterInsertMode;
+  default:
+    return StandardAction::Unknown;
+  };
+}
+
+TypingAction Editor::GetTypingAction(const int input) {
+  switch (input) {
+  case KEY_ESC:
+    return TypingAction::ExitTypingMode;
+  case KEY_BACKSPACE_ASCII:
+  case KEY_BACKSPACE_DEL:
+  case KEY_BACKSPACE:
+    return TypingAction::DeletePreviousChar;
+  case KEY_ENTER_CARR_RET:
+  case KEY_ENTER_LINE_FEED:
+  case KEY_ENTER:
+    return TypingAction::TypeNewline;
+  default:
+    return TypingAction::TypeCharacter;
+  };
 }
 
 Editor::~Editor() { endwin(); }

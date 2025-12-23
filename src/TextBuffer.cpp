@@ -5,11 +5,10 @@
 TextBuffer::TextBuffer(std::string filename) : filename(filename) {
   std::ifstream file(filename);
   if (!file.is_open()) {
-    throw new std::runtime_error("Error: could not open file.");
+    throw std::runtime_error("Could not open file.");
   }
   std::string line;
   while (std::getline(file, line)) {
-    line += '\n';
     rows.emplace_back(line);
   }
 }
@@ -20,7 +19,7 @@ void TextBuffer::Draw(bool full) {
   }
 
   size_t i = 0;
-  for (auto row : rows) {
+  for (auto &row : rows) {
     move(i, 0);
     row.Draw(full);
     i++;
@@ -40,7 +39,6 @@ void TextBuffer::InputChar(const char c, Coords &pos) {
       return;
     }
     Row r = rows.at(pos.y).Split(pos.x);
-    rows.at(pos.y).InputChar('\n', pos.x);
     rows.insert(rows.begin() + pos.y + 1, r);
     pos.y++;
     pos.x = 0;
@@ -51,24 +49,27 @@ void TextBuffer::InputChar(const char c, Coords &pos) {
 }
 
 void TextBuffer::DeleteChar(Coords &pos) {
-  if (pos.y >= NumRows() || pos.y <= 0) {
+  if (pos.y >= NumRows()) {
     return;
   }
   pos.x--;
   if (pos.x >= 0) {
     rows.at(pos.y).DeleteChar(pos.x);
   } else {
+    if (pos.y == 0) {
+      return;
+    }
+    pos.x = NumCharsAt(pos.y - 1);
     rows.at(pos.y - 1).Append(rows.at(pos.y));
     rows.erase(rows.begin() + pos.y);
     pos.y--;
-    pos.x = NumCharsAt(pos.y);
   }
 }
 
 void TextBuffer::Save() {
   std::ofstream file(filename);
   if (!file.is_open()) {
-    throw new std::runtime_error("Error: could not open file.");
+    throw std::runtime_error("Could not open file.");
   }
   for (auto row : rows) {
     row.Write(file);

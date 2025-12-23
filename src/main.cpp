@@ -1,7 +1,6 @@
 #include "../include/Editor.hpp"
 #include <curses.h>
 #include <iostream>
-#include <stdexcept>
 
 typedef struct Args {
   std::string filename;
@@ -22,7 +21,7 @@ int main(int argc, char **argv) {
     return -1;
   }
   try {
-    Editor e(Editor(std::string(args.filename)));
+    Editor e(std::string(args.filename));
     e.Run();
   } catch (const std::exception &ex) {
     std::cerr << "An exception occured: " << ex.what() << std::endl;
