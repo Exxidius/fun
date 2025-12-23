@@ -10,9 +10,13 @@ public:
 
   size_t NumChars();
 
-  void Draw(bool full = false);
+  bool IsDirty();
+
+  std::string &GetRow();
+
   void InputChar(const char c, const int pos);
   void Write(std::ofstream &file);
+  void SetDirty(bool val = true);
   void DeleteChar(const int pos);
   void Append(const Row &other);
   void Append(const char *s);

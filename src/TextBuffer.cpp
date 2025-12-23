@@ -1,5 +1,4 @@
 #include "../include/TextBuffer.hpp"
-#include <curses.h>
 #include <fstream>
 
 TextBuffer::TextBuffer(std::string filename) : filename(filename) {
@@ -11,20 +10,11 @@ TextBuffer::TextBuffer(std::string filename) : filename(filename) {
   while (std::getline(file, line)) {
     rows.emplace_back(line);
   }
+
+  // TODO: handle empty files
 }
 
-void TextBuffer::Draw(bool full) {
-  if (full) {
-    clear();
-  }
-
-  size_t i = 0;
-  for (auto &row : rows) {
-    move(i, 0);
-    row.Draw(full);
-    i++;
-  }
-}
+std::vector<Row> &TextBuffer::GetRows() { return rows; }
 
 size_t TextBuffer::NumCharsAt(size_t idx) {
   if (idx >= NumRows()) {
@@ -42,6 +32,7 @@ void TextBuffer::InputChar(const char c, Coords &pos) {
     rows.insert(rows.begin() + pos.y + 1, r);
     pos.y++;
     pos.x = 0;
+    SetDirty(pos.y, NumRows() - 1);
   } else {
     rows.at(pos.y).InputChar(c, pos.x);
     pos.x++;
@@ -63,6 +54,13 @@ void TextBuffer::DeleteChar(Coords &pos) {
     rows.at(pos.y - 1).Append(rows.at(pos.y));
     rows.erase(rows.begin() + pos.y);
     pos.y--;
+    SetDirty(pos.y, NumRows() - 1);
+  }
+}
+
+void TextBuffer::SetDirty(size_t start, size_t end) {
+  for (; start <= end; start++) {
+    rows.at(start).SetDirty();
   }
 }
 
@@ -71,7 +69,7 @@ void TextBuffer::Save() {
   if (!file.is_open()) {
     throw std::runtime_error("Could not open file.");
   }
-  for (auto row : rows) {
+  for (auto &row : rows) {
     row.Write(file);
   }
 }

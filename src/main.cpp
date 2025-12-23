@@ -1,10 +1,9 @@
 #include "../include/Editor.hpp"
-#include <curses.h>
 #include <iostream>
 
-typedef struct Args {
+struct Args {
   std::string filename;
-} Args;
+};
 
 int HandleArgs(Args *args, int argc, char **argv) {
   if (argc <= 1) {

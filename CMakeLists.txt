@@ -10,6 +10,6 @@ add_executable(
     src/Editor.cpp
     src/TextBuffer.cpp
     src/Row.cpp
-
+    src/Renderer.cpp
 )
 target_link_libraries(fun ncurses)

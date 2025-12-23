@@ -1,28 +1,12 @@
 #include "../include/Editor.hpp"
 #include <algorithm>
+#include <curses.h>
 #include <iostream>
 
 Editor::Editor(std::string filename) {
   buffers.emplace_back(filename);
   active_buffer_idx = 0;
-
-  initscr();
-  cbreak();
-  noecho();
-  raw();
-  RefreshScreen();
-}
-
-bool Editor::CursorChanged() {
-  int x, y;
-  getyx(stdscr, y, x);
-  return Coords(x, y) != cursor;
-}
-
-void Editor::RefreshScreen() {
-  ActiveBuffer().Draw(CursorChanged());
-  move(cursor.y, cursor.x);
-  refresh();
+  renderer.Draw(ActiveBuffer(), cursor);
 }
 
 TextBuffer &Editor::ActiveBuffer() {
@@ -39,7 +23,7 @@ void Editor::ClampCursor() {
 
 void Editor::Run() {
   while (running) {
-    int c = getch();
+    int c = renderer.GetInput();
     switch (mode) {
     case EditorMode::Typing:
       HandleTyping(c);
@@ -49,7 +33,7 @@ void Editor::Run() {
       break;
     }
     ClampCursor();
-    RefreshScreen();
+    renderer.Draw(ActiveBuffer(), cursor);
   }
 }
 
@@ -143,5 +127,3 @@ TypingAction Editor::GetTypingAction(const int input) {
     return TypingAction::TypeCharacter;
   };
 }
-
-Editor::~Editor() { endwin(); }
