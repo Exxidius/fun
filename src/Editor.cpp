@@ -6,7 +6,7 @@
 Editor::Editor(std::string filename) {
   buffers.emplace_back(filename);
   active_buffer_idx = 0;
-  renderer.Draw(ActiveBuffer(), cursor);
+  renderer.Draw(ActiveBuffer(), cursor, scroll_offset_y);
 }
 
 TextBuffer &Editor::ActiveBuffer() {
@@ -21,9 +21,21 @@ void Editor::ClampCursor() {
   cursor.x = std::clamp(cursor.x, 0, (int)ActiveBuffer().NumCharsAt(cursor.y));
 }
 
+void Editor::UpdateScrollOffset(Coords old_cursor) {
+  ScreenSize win = renderer.GetScreenSize();
+  if (cursor.y >= win.rows && cursor.y - old_cursor.y > 0) {
+    int diff = cursor.y - win.rows + 1;
+    scroll_offset_y = diff > scroll_offset_y ? diff : scroll_offset_y;
+  }
+  if (cursor.y < scroll_offset_y && cursor.y - old_cursor.y < 0) {
+    scroll_offset_y = cursor.y;
+  }
+}
+
 void Editor::Run() {
   while (running) {
     int c = renderer.GetInput();
+    Coords old_cursor = cursor;
     switch (mode) {
     case EditorMode::Typing:
       HandleTyping(c);
@@ -33,7 +45,8 @@ void Editor::Run() {
       break;
     }
     ClampCursor();
-    renderer.Draw(ActiveBuffer(), cursor);
+    UpdateScrollOffset(old_cursor);
+    renderer.Draw(ActiveBuffer(), cursor, scroll_offset_y);
   }
 }
 

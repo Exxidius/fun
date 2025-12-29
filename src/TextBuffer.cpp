@@ -68,11 +68,6 @@ void TextBuffer::SetDirty(size_t start, size_t end) {
 }
 
 void TextBuffer::Save() {
-  // Dont write if the file is empty
-  if (rows.size() == 1 && rows.at(0).GetRow() == "\n") {
-    return;
-  }
-
   std::ofstream file(filename);
   if (!file.is_open()) {
     throw std::runtime_error("Could not open file.");

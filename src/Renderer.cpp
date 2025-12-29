@@ -8,21 +8,35 @@ Renderer::Renderer() {
   raw();
 }
 
+ScreenSize Renderer::GetScreenSize() const {
+  int x, y;
+  getmaxyx(stdscr, y, x);
+  return {y - view_offset_y, x};
+}
+
 int Renderer::GetInput() { return getch(); }
 
-void Renderer::Draw(TextBuffer &buf, Coords cursor) {
-  size_t i = 0;
-  for (auto &row : buf.GetRows()) {
+void Renderer::Draw(TextBuffer &buf, Coords cursor, size_t scroll_offset_y) {
+  ScreenSize win = GetScreenSize();
+  for (size_t i = 0; i < win.rows; i++) {
     move(i, 0);
-    if (row.IsDirty()) {
-      clrtoeol();
-      move(i, 0);
-      printw("%s", row.GetRow().c_str());
-      row.SetDirty(false);
+    clrtoeol();
+    move(i, 0);
+
+    size_t logical_y = scroll_offset_y + i;
+    if (logical_y >= buf.GetRows().size()) {
+      // Print empty symbol if buffer at end
+      printw("*\n");
+    } else {
+      // Print Row if in buffer
+      Row row = buf.GetRows().at(logical_y);
+      if (row.IsDirty()) {
+        printw("%s", row.GetRow().c_str());
+        row.SetDirty(false);
+      }
     }
-    i++;
   }
-  move(cursor.y, cursor.x);
+  move(cursor.y - scroll_offset_y, cursor.x);
   refresh();
 }
 
