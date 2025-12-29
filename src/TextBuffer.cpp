@@ -11,7 +11,10 @@ TextBuffer::TextBuffer(std::string filename) : filename(filename) {
     rows.emplace_back(line);
   }
 
-  // TODO: handle empty files
+  // If an empty file is opened add an initial line
+  if (rows.empty()) {
+    rows.emplace_back("");
+  }
 }
 
 std::vector<Row> &TextBuffer::GetRows() { return rows; }
@@ -65,6 +68,11 @@ void TextBuffer::SetDirty(size_t start, size_t end) {
 }
 
 void TextBuffer::Save() {
+  // Dont write if the file is empty
+  if (rows.size() == 1 && rows.at(0).GetRow() == "\n") {
+    return;
+  }
+
   std::ofstream file(filename);
   if (!file.is_open()) {
     throw std::runtime_error("Could not open file.");
