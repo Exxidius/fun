@@ -25,4 +25,5 @@ make
 ./fun <file-to-open>
 ```
 
-> [!WARNING] Currently this project is under development and more features will be added in the future.
+> [!WARNING]
+> Currently this project is under development and more features will be added in the future.
