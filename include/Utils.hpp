@@ -1,11 +1,11 @@
 #pragma once
 
-#define CTRL_KEY(k) ((k) & 0x1f)
-#define KEY_ESC 27
-#define KEY_BACKSPACE_ASCII 8
-#define KEY_BACKSPACE_DEL 127
-#define KEY_ENTER_LINE_FEED 10
-#define KEY_ENTER_CARR_RET 13
+constexpr int CTRL_KEY(int k) { return k & 0x1f; }
+constexpr int KEY_ESC = 27;
+constexpr int KEY_BACKSPACE_ASCII = 8;
+constexpr int KEY_BACKSPACE_DEL = 127;
+constexpr int KEY_ENTER_LINE_FEED = 10;
+constexpr int KEY_ENTER_CARR_RET = 13;
 
 enum class EditorMode {
   Standard,
