@@ -17,7 +17,7 @@ private:
   TypingAction GetTypingAction(const int input);
 
   void ClampCursor();
-  void UpdateScrollOffset(Coords old_cursor);
+  void UpdateScrollOffset();
   void HandleTyping(const int input);
   void HandleStandard(const int input);
   void ChangeCursor(CursorMode mode);

@@ -21,21 +21,19 @@ void Editor::ClampCursor() {
   cursor.x = std::clamp(cursor.x, 0, (int)ActiveBuffer().NumCharsAt(cursor.y));
 }
 
-void Editor::UpdateScrollOffset(Coords old_cursor) {
+void Editor::UpdateScrollOffset() {
   ScreenSize win = renderer.GetScreenSize();
-  if (cursor.y >= win.rows && cursor.y - old_cursor.y > 0) {
-    int diff = cursor.y - win.rows + 1;
-    scroll_offset_y = diff > scroll_offset_y ? diff : scroll_offset_y;
-  }
-  if (cursor.y < scroll_offset_y && cursor.y - old_cursor.y < 0) {
+  if (cursor.y < scroll_offset_y) {
     scroll_offset_y = cursor.y;
+  }
+  if (cursor.y >= scroll_offset_y + win.rows) {
+    scroll_offset_y = cursor.y - win.rows + 1;
   }
 }
 
 void Editor::Run() {
   while (running) {
     int c = renderer.GetInput();
-    Coords old_cursor = cursor;
     switch (mode) {
     case EditorMode::Typing:
       HandleTyping(c);
@@ -45,7 +43,7 @@ void Editor::Run() {
       break;
     }
     ClampCursor();
-    UpdateScrollOffset(old_cursor);
+    UpdateScrollOffset();
     renderer.Draw(ActiveBuffer(), cursor, scroll_offset_y);
   }
 }
