@@ -1,4 +1,4 @@
-#include "../include/Editor.hpp"
+#include "../include/editor.h"
 #include <algorithm>
 #include <curses.h>
 #include <iostream>

@@ -1,5 +1,5 @@
 #pragma once
-#include "TextBuffer.hpp"
+#include "text_buffer.h"
 
 struct ScreenSize {
   int rows;

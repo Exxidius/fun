@@ -1,6 +1,6 @@
 #pragma once
-#include "Row.hpp"
-#include "Utils.hpp"
+#include "row.h"
+#include "utils.h"
 #include <vector>
 
 class TextBuffer {

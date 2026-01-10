@@ -1,4 +1,4 @@
-#include "../include/Renderer.hpp"
+#include "../include/renderer.h"
 #include <curses.h>
 
 Renderer::Renderer() {

@@ -1,6 +1,6 @@
 #pragma once
-#include "Renderer.hpp"
-#include "TextBuffer.hpp"
+#include "renderer.h"
+#include "text_buffer.h"
 #include <string>
 #include <vector>
 

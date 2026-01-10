@@ -1,4 +1,4 @@
-#include "../include/TextBuffer.hpp"
+#include "../include/text_buffer.h"
 #include <fstream>
 
 TextBuffer::TextBuffer(std::string filename) : filename(filename) {
